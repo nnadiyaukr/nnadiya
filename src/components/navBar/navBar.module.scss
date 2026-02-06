@@ -1,0 +1,32 @@
+@use '@mixins/index';
+
+.navBar {
+    @include index.responsive-property('marginTop', 20, 40, 320, 768);
+}
+.nav {
+    display: flex;
+    justify-content: center;
+    @include index.responsive-column-gap(30, 40, 992, 1900);
+    flex-wrap: wrap;
+    row-gap: 10px;
+}
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 40px;
+}
+
+.link {
+    font-weight: 500;
+    @include index.responsive-font(12, 19, 320, 992);
+}
+
+@media (max-width: 992px) {
+    .row {
+        justify-content: center;
+    }
+    .nav {
+        @include index.responsive-column-gap(15, 30, 332, 992);
+    }
+}

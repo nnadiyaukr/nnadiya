@@ -1,0 +1,13 @@
+$maxDesignWidth: 1890; //Ширина полотна
+$maxWidth: 1565; //Ширина контейнера: контент
+$sideIndent: 20; //Боковой отступ (кол-во px с одной стороны)
+
+$maxWidthContainer: #{$maxWidth + $sideIndent * 2}px; //Ширина контейнера: контент + боковые отступы
+$maxWidthContainerLarge: #{$maxDesignWidth + $sideIndent * 2}px; //Ширина большого контейнера: контент + боковые отступы
+
+$fontSize: 16px;
+
+$tablet: 992px; // Планшеты, некоторые телефоны в горизонтальном положении
+$mobile: 768px; // Телефоны L
+$mobileSmall: 480px; // Телефоны S
+

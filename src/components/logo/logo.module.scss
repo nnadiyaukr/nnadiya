@@ -1,0 +1,45 @@
+@use '@mixins/index';
+
+.logo {
+    display: flex;
+    @include index.responsive-column-gap(4, 10, 320, 768);
+}
+
+.gerb {
+    border-radius: 18px;
+    @include index.responsive-width(30, 50, 320, 992);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+        max-width: 100%;
+    }
+}
+.text {
+    padding: 10px 18px;
+    @include index.responsive-property('paddingLeft', 10, 18, 320, 768);
+    @include index.responsive-property('paddingRight', 10, 18, 320, 768);
+    color: #ffffff;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    background: black;
+    @include index.responsive-font(25, 50, 320, 992);
+}
+
+.primary {
+    font-weight: 400;
+}
+.secondary {
+    font-style: italic;
+    font-weight: 200;
+    @include index.responsive-font(16, 40, 320, 992);
+}
+
+@media (max-width: 425px) {
+    .text {
+        border-radius: 15px;
+        padding-bottom: 8px;
+        padding-top: 8px;
+    }
+}

@@ -1,0 +1,15 @@
+@use '@mixins/index';
+
+.slider {
+    @include index.responsive-property('marginTop', 30, 50, 320, 768);
+}
+.slide {
+    @include index.responsive-height(180, 300, 320, 768);
+    border-radius: 15px;
+    overflow: hidden;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}

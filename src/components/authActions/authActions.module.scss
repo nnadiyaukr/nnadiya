@@ -1,0 +1,29 @@
+@use '@mixins/index';
+
+.actions {
+    display: flex;
+    @include index.responsive-font(11, 16, 320, 768);
+}
+.login,
+.registration {
+    cursor: pointer;
+    padding: 10px 20px;
+    @include index.responsive-property('paddingLeft', 10, 20, 320, 768);
+    @include index.responsive-property('paddingRight', 10, 20, 320, 768);
+    font-weight: 600;
+    transition: 0.2s;
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.login {
+    background: #000000;
+    color: #ffffff;
+    border-radius: 10px 0 0 10px;
+}
+.registration {
+    background: #ffffff;
+    color: #000000;
+    border-radius: 0 10px 10px 0;
+}

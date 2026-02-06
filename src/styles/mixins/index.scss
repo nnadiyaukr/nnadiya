@@ -1,0 +1,121 @@
+@mixin responsive-font($min-font, $max-font, $min-screen, $max-screen) {
+    $slope: ($max-font - $min-font) / ($max-screen - $min-screen);
+    $slope-vw: $slope * 100;
+    $intercept: $min-font - $slope * $min-screen;
+
+    font-size: clamp(
+        #{$min-font}px,
+        #{$intercept}px + #{$slope-vw}vw,
+        #{$max-font}px
+    );
+}
+@mixin responsive-width($min-width, $max-width, $min-screen, $max-screen) {
+    $slope: ($max-width - $min-width) / ($max-screen - $min-screen);
+    $slope-vw: $slope * 100;
+    $intercept: $min-width - $slope * $min-screen;
+
+    width: clamp(
+        #{$min-width}px,
+        #{$intercept}px + #{$slope-vw}vw,
+        #{$max-width}px
+    );
+}
+@mixin responsive-height(
+    $min-height,
+    $max-height,
+    $min-screen: 992,
+    $max-screen: 1800
+) {
+    $slope: ($max-height - $min-height) / ($max-screen - $min-screen);
+    $slope-vw: $slope * 100;
+    $intercept: $min-height - $slope * $min-screen;
+
+    height: clamp(
+        #{$min-height}px,
+        #{$intercept}px + #{$slope-vw}vw,
+        #{$max-height}px
+    );
+}
+
+@mixin responsive-property(
+    $property,
+    $min-value,
+    $max-value,
+    $min-breakpoint: 992,
+    $max-breakpoint: 1800
+) {
+    $css-property: str-insert(
+        str-slice($property, 1, -1),
+        '-',
+        str-index($property, 'Top') or str-index($property, 'Bottom') or
+            str-index($property, 'Left') or str-index($property, 'Right')
+    );
+
+    #{$css-property}: #{$min-value}px;
+
+    @media (min-width: #{$min-breakpoint}px) and (max-width: #{$max-breakpoint}px) {
+        #{$css-property}: calc(
+            #{$min-value}px + (#{$max-value} - #{$min-value}) *
+                (
+                    (100vw - #{$min-breakpoint}px) /
+                        (#{$max-breakpoint} - #{$min-breakpoint})
+                )
+        );
+    }
+
+    @media (min-width: #{$max-breakpoint}px) {
+        #{$css-property}: #{$max-value}px;
+    }
+}
+
+@mixin responsive-top($min-top, $max-top, $min-screen: 992, $max-screen: 1800) {
+    $slope: ($max-top - $min-top) / ($max-screen - $min-screen);
+    $slope-vw: $slope * 100;
+    $intercept: $min-top - $slope * $min-screen;
+    top: clamp(#{$min-top}px, #{$intercept}px + #{$slope-vw}vw, #{$max-top}px);
+}
+
+@mixin responsive-column-gap(
+    $min-gap,
+    $max-gap,
+    $min-breakpoint: 992,
+    $max-breakpoint: 1800
+) {
+    column-gap: #{$min-gap}px;
+
+    @media (min-width: #{$min-breakpoint}px) and (max-width: #{$max-breakpoint}px) {
+        column-gap: calc(
+            #{$min-gap}px + (#{$max-gap} - #{$min-gap}) *
+                (
+                    (100vw - #{$min-breakpoint}px) /
+                        (#{$max-breakpoint} - #{$min-breakpoint})
+                )
+        );
+    }
+
+    @media (min-width: #{$max-breakpoint}px) {
+        column-gap: #{$max-gap}px;
+    }
+}
+@mixin responsive-row-gap(
+    $min-gap,
+    $max-gap,
+    $min-breakpoint: 992,
+    $max-breakpoint: 1800
+) {
+    row-gap: #{$min-gap}px;
+
+    @media (min-width: #{$min-breakpoint}px) and (max-width: #{$max-breakpoint}px) {
+        row-gap: calc(
+            #{$min-gap}px + (#{$max-gap} - #{$min-gap}) *
+                (
+                    (100vw - #{$min-breakpoint}px) /
+                        (#{$max-breakpoint} - #{$min-breakpoint})
+                )
+        );
+    }
+
+    @media (min-width: #{$max-breakpoint}px) {
+        row-gap: #{$max-gap}px;
+    }
+}

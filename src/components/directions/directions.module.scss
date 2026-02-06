@@ -1,0 +1,80 @@
+@use '@mixins/index';
+
+.directions {
+    @include index.responsive-property('marginTop', 100, 150, 320, 768);
+}
+.title {
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+    color: #ffffff;
+    background: black;
+    border-radius: 30px;
+    padding: 20px;
+    @include index.responsive-font(25, 27, 320, 768);
+}
+.row {
+    display: flex;
+    margin-top: 30px;
+    @include index.responsive-column-gap(25, 50, 768, 992);
+}
+.column {
+    flex: 0 1 50%;
+    display: flex;
+}
+.item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.img {
+    height: 300px;
+    img {
+        max-width: 100%;
+        object-fit: cover;
+        height: 100%;
+        border-radius: 20px;
+    }
+}
+.subtitle {
+    margin-top: 15px;
+    font-weight: 700;
+    text-align: center;
+    @include index.responsive-font(22, 28, 320, 768);
+}
+.body {
+    background: rgba(0, 0, 0, 0.11);
+    flex: 1 1 auto;
+    border-radius: 30px;
+    padding: 20px;
+    margin-top: 6px;
+    display: flex;
+    flex-direction: column;
+}
+.description {
+    text-align: center;
+    margin-bottom: 20px;
+    @include index.responsive-font(15, 20, 320, 768);
+}
+.link {
+    margin-top: auto;
+    background: #ffffff;
+    padding: 15px;
+    text-align: center;
+    border-radius: 15px;
+    transition: all 0.3s ease 0s;
+    font-weight: 600;
+    @include index.responsive-font(15, 22, 320, 768);
+    @media (hover: hover) {
+        &:hover {
+            transform: translate(0, -3px);
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .row {
+        flex-direction: column;
+        @include index.responsive-row-gap(40, 70, 320, 768);
+    }
+}
