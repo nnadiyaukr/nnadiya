@@ -5,5 +5,5 @@ RUN npm install
 ADD . .
 ENV NODE_ENV production
 RUN npm run build
-CMD ["npm", "run", "start:ssr"]
+CMD ["npm", "run", "start:nonssr"]
 EXPOSE 3000
