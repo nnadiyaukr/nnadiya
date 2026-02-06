@@ -1,3 +1,3 @@
 export const httpConfig = {
-    apiEndpoint: 'http://localhost:8080/api/',
+    apiEndpoint: 'http://173.242.54.225:8080/api/',
 };
