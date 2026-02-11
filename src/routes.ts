@@ -12,5 +12,7 @@ export default [
         layout('./layouts/protectedRoutesLayout.tsx', [
             route('profile', './pages/profile.tsx'),
         ]),
+
+        route('problem', './pages/problem.tsx'),
     ]),
 ] satisfies RouteConfig;

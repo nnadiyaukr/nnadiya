@@ -6,6 +6,8 @@ interface IAppInput {
     value: string;
     name: string;
     placeholder: string;
+    type: string;
+    additionalStyles: string;
     onChange: (value: string) => void;
 }
 
@@ -15,7 +17,7 @@ export const AppInput: FC<IAppInput> = ({
     placeholder,
     type,
     onChange,
-                                            additionalStyles
+    additionalStyles,
 }) => {
     const handleChange = (target) => {
         const { name, value } = target;

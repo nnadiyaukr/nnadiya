@@ -1,293 +1,481 @@
-// import classes from './invite.module.scss';
-// import img01 from '@img/invite/01.png';
-// import { Link } from 'react-router';
-//
-// export const Invite = () => {
-//     return (
-//         <div className={classes.invite}>
-//             <div className="_container-default">
-//                 <div className={classes.title}>Присоединяйтесь</div>
-//                 <div className={classes.row}>
-//                     <div className={classes.img}>
-//                         {<img src={img01} alt="invite" />}
-//                     </div>
-//                     <div className={classes.body}>
-//                         <div className={classes.text}>
-//                             Если вы хотите помочь нам советом, информацией или
-//                             участием
-//                         </div>
-//                         <div className={classes.actions}>
-//                             <Link to="#">Хочу </Link>
-//                             <Link to="#"></Link>
-//                         </div>
-//                     </div>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
+//@ts-nocheck
+import classes from './invite.module.scss';
+import img01 from '@img/invite/01.png';
+import { AppInput } from '@/components/share/appInput';
+import { useState, useEffect } from 'react';
+import * as yup from 'yup';
+import httpService from '@/services/http.service';
+import { ticketService } from '@/services/ticket.service';
+import useUiActionsStore from '@/core/store/uiActions.store';
 
-import React, { useState, useRef } from "react";
+const validationSchema = yup.object().shape({
+    fullName: yup
+        .string()
+        .required("Поле ФІО обов'язкове")
+        .min(5, 'ФІО має містити мінімум 5 символів')
+        .matches(
+            /^[а-яА-ЯёЁa-zA-Z\s]+$/,
+            'ФІО має містити лише літери та пробіли'
+        )
+        .test('two-words', "Введіть повне ФІО (ім'я та прізвище)", (value) => {
+            return value && value.trim().split(/\s+/).length >= 2;
+        }),
 
-export  function Invite() {
-    const [form, setForm] = useState({
-        lastName: "",
-        firstName: "",
-        patronymic: "",
-        about: "",
-        email: "",
-        phone: "",
-        files: [], // array of File
+    email: yup
+        .string()
+        .required("Поле email обов'язкове")
+        .email('Введіть коректний email')
+        .matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Невірний формат email'),
+
+    phone: yup
+        .string()
+        .required("Поле телефон обов'язкове")
+        .matches(
+            /^\+?\d[\d\s\-\(\)]{7,}\d$/,
+            'Введіть коректний номер телефону'
+        )
+        .test('phone-length', 'Номер має містити мінімум 10 цифр', (value) => {
+            const digits = value?.replace(/\D/g, '') || '';
+            return digits.length >= 10;
+        }),
+
+    about: yup
+        .string()
+        .max(500, 'Розповідь про себе не повинна перевищувати 500 символів')
+        .optional(),
+
+    photo: yup
+        .array()
+        .of(
+            yup
+                .mixed()
+                .test(
+                    'file-size',
+                    'Файл занадто великий (макс. 5MB)',
+                    (value) => {
+                        if (!value) return true;
+                        return value.size <= 5 * 1024 * 1024;
+                    }
+                )
+                .test(
+                    'file-type',
+                    'Непідтримуваний тип файлу (jpg, png, pdf)',
+                    (value) => {
+                        if (!value) return true;
+                        return [
+                            'image/jpeg',
+                            'image/png',
+                            'application/pdf',
+                        ].includes(value.type);
+                    }
+                )
+        )
+        .min(1, 'Будь ласка, прикріпіть хоча б один файл') // Добавлена проверка на минимум 1 файл
+        .max(2, 'Максимум 2 файли')
+        .nullable(),
+});
+
+export const Invite = () => {
+    const [data, setData] = useState({
+        fullName: '',
+        email: '',
+        phone: '',
+        about: '',
+        photo: [],
     });
 
-    const [errors, setErrors] = useState({
-        lastName: "",
-        firstName: "",
-        patronymic: "",
-        about: "",
-        email: "",
-        phone: "",
-        files: "",
-    });
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const { setShowModal } = useUiActionsStore();
 
-    const fileInputRef = useRef(null);
+    useEffect(() => {
+        if (Object.keys(touched).length > 0) {
+            validateField();
+        }
+    }, [data, touched]);
 
-    // Basic validators
-    const validators = {
-        lastName: (v) => (v.trim() ? "" : "Фамилия обязательна"),
-        firstName: (v) => (v.trim() ? "" : "Имя обязательно"),
-        patronymic: (v) => "", // отчество можно не обязательно — уберите валидацию если нужно
-        about: (v) => (v.length <= 1000 ? "" : "Поле «О себе» слишком длинное"),
-        email: (v) => {
-            if (!v.trim()) return "Email обязателен";
-            // простой regex для email
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(v) ? "" : "Неверный формат email";
-        },
-        phone: (v) => {
-            if (!v.trim()) return "Телефон обязателен";
-            // уже гарантируем, что phone содержит только цифры
-            if (!/^\d+$/.test(v)) return "Телефон должен содержать только цифры";
-            if (v.length < 7) return "Телефон слишком короткий";
-            if (v.length > 15) return "Телефон слишком длинный";
-            return "";
-        },
-        files: (files) => {
-            if (!files || files.length === 0) return "Загрузите 1 или 2 фотографии";
-            if (files.length > 2) return "Можно загрузить не более 2 фотографий";
-            for (let f of files) {
-                if (!f.type.startsWith("image/")) return "Допустимы только изображения";
+    const validateField = async (fieldName) => {
+        try {
+            if (fieldName) {
+                await validationSchema.validateAt(fieldName, data);
+                setErrors((prev) => {
+                    const newErrors = { ...prev };
+                    delete newErrors[fieldName];
+                    return newErrors;
+                });
+            } else {
+                await validationSchema.validate(data, { abortEarly: false });
+                setErrors({});
             }
-            return "";
-        },
+        } catch (err) {
+            if (err instanceof yup.ValidationError) {
+                const newErrors = {};
+                err.inner.forEach((error) => {
+                    if (fieldName && error.path === fieldName) {
+                        newErrors[fieldName] = error.message;
+                    } else if (!fieldName) {
+                        newErrors[error.path] = error.message;
+                    }
+                });
+                setErrors((prev) => ({ ...prev, ...newErrors }));
+            }
+        }
     };
 
-    // Validate a single field and update errors state
-    function validateField(name, value) {
-        const validator = validators[name];
-        if (!validator) return;
-        const err = validator(value);
-        setErrors((e) => ({ ...e, [name]: err }));
-        return err;
-    }
-
-    // Validate all fields, return boolean valid
-    function validateAll() {
-        const newErrors = {};
-        let valid = true;
-        for (let key of Object.keys(validators)) {
-            const value = key === "files" ? form.files : form[key];
-            const err = validators[key](value);
-            newErrors[key] = err;
-            if (err) valid = false;
+    const handleChange = async (name, value) => {
+        // Для поля телефона оставляем только цифры
+        if (name === 'phone') {
+            value = value.replace(/\D/g, '');
         }
-        setErrors(newErrors);
-        return valid;
-    }
 
-    // Generic change handler for text fields
-    function handleChange(e) {
-        const { name, value } = e.target;
-        setForm((f) => ({ ...f, [name]: value }));
-        validateField(name, value);
-    }
+        setData((prevState) => ({
+            ...prevState,
+            [name]: value,
+        }));
 
-    // Phone change: allow only digits on input
-    function handlePhoneChange(e) {
-        const raw = e.target.value || "";
-        const digits = raw.replace(/\D/g, "");
-        setForm((f) => ({ ...f, phone: digits }));
-        validateField("phone", digits);
-    }
-
-    // File selection
-    function handleFilesChange(e) {
-        const fileList = Array.from(e.target.files || []);
-        // Limit to first 2 files
-        const files = fileList.slice(0, 2);
-        setForm((f) => ({ ...f, files }));
-        validateField("files", files);
-    }
-
-    // Remove one file by index
-    function removeFile(index) {
-        const newFiles = form.files.filter((_, i) => i !== index);
-        setForm((f) => ({ ...f, files: newFiles }));
-        validateField("files", newFiles);
-        // reset native input if no files remain so user can reselect same file if needed
-        if (newFiles.length === 0 && fileInputRef.current) {
-            fileInputRef.current.value = "";
+        if (touched[name]) {
+            await validateField(name);
         }
-    }
+    };
 
-    // Submit
-    function handleSubmit(e) {
+    const handleBlur = (fieldName) => {
+        setTouched((prev) => ({
+            ...prev,
+            [fieldName]: true,
+        }));
+    };
+
+    const handleFileChange = async (e) => {
+        const files = Array.from(e.target.files);
+
+        // Ограничиваем количество файлов до 2
+        const newFiles = files.slice(0, 2);
+
+        // Если уже есть выбранные файлы, добавляем новые (но не более 2 всего)
+        const existingFiles = data.photo || [];
+        const allFiles = [...existingFiles, ...newFiles].slice(0, 2);
+
+        await handleChange('photo', allFiles);
+
+        // Автоматически помечаем поле как touched после выбора файла
+        if (!touched.photo) {
+            setTouched((prev) => ({
+                ...prev,
+                photo: true,
+            }));
+        }
+    };
+
+    const removeFile = async (index) => {
+        const updatedFiles = data.photo.filter((_, i) => i !== index);
+        await handleChange('photo', updatedFiles);
+
+        // Если после удаления файлов не осталось, валидация покажет ошибку
+        if (updatedFiles.length === 0 && touched.photo) {
+            await validateField('photo');
+        }
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const ok = validateAll();
-        if (!ok) {
-            // focus first field with error
-            const firstErrorField = Object.keys(errors).find((k) => errors[k]);
-            if (firstErrorField) {
-                const el = document.querySelector(`[name="${firstErrorField}"]`);
-                if (el && typeof el.focus === "function") el.focus();
+
+        const allTouched = {
+            fullName: true,
+            email: true,
+            phone: true,
+            about: true,
+            photo: true,
+        };
+        setTouched(allTouched);
+
+        try {
+            await validationSchema.validate(data, { abortEarly: false });
+
+            setIsSubmitting(true);
+
+            // const formData = new FormData();
+            // formData.append('fullName', data.fullName);
+            // formData.append('email', data.email);
+            // formData.append('phone', data.phone);
+            // formData.append('about', data.about);
+            //
+            // data.photo.forEach((file) => {
+            //     formData.append('photos', file);
+            // });
+
+            const resp = await ticketService.invite({
+                ...data,
+                photo: data.photo.map((file) => ({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                })),
+            });
+
+            if (resp?.data?.success) {
+                setShowModal('success');
             }
-            return;
+
+            // const res = await httpService.post(
+            //     'invite',
+            //     { formData },
+            //     {
+            //         headers: {
+            //             'Content-Type': 'multipart/form-data',
+            //         },
+            //     }
+            // );
+
+            // Здесь будет реальный запрос к API
+
+            setData({
+                fullName: '',
+                email: '',
+                phone: '',
+                about: '',
+                photo: [],
+            });
+            setErrors({});
+            setTouched({});
+        } catch (err) {
+            if (err instanceof yup.ValidationError) {
+                const newErrors = {};
+                err.inner.forEach((error) => {
+                    newErrors[error.path] = error.message;
+                });
+                setErrors(newErrors);
+
+                const firstErrorField = Object.keys(newErrors)[0];
+                const errorElement = document.querySelector(
+                    `[name="${firstErrorField}"]`
+                );
+                if (errorElement) {
+                    errorElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center',
+                    });
+                }
+            } else {
+                console.error('Ошибка при отправке:', err);
+                alert('Помилка при відправці форми. Спробуйте ще раз.');
+            }
+        } finally {
+            setIsSubmitting(false);
         }
+    };
 
-        // Build FormData for demonstration
-        const fd = new FormData();
-        fd.append("lastName", form.lastName);
-        fd.append("firstName", form.firstName);
-        fd.append("patronymic", form.patronymic);
-        fd.append("about", form.about);
-        fd.append("email", form.email);
-        fd.append("phone", form.phone);
-        form.files.forEach((file, i) => fd.append(`photo_${i + 1}`, file));
-
-        // For demo: log keys and values (files will appear as File objects)
-        for (let pair of fd.entries()) {
-            console.log(pair[0], pair[1]);
-        }
-
-        // reset or show success
-        alert("Форма отправлена (см. консоль)");
-    }
+    const isFormValid = () => {
+        return Object.keys(errors).length === 0 && data.photo?.length > 0;
+    };
 
     return (
-        <form onSubmit={handleSubmit} noValidate>
-            <div>
-                <label>
-                    Фамилия
-                    <input
-                        name="lastName"
-                        value={form.lastName}
-                        onChange={handleChange}
-                        onBlur={(e) => validateField("lastName", e.target.value)}
-                    />
-                </label>
-                {errors.lastName && <div role="alert">{errors.lastName}</div>}
-            </div>
+        <div className={classes.invite}>
+            <div className="_container-default">
+                <div className={classes.title}>Приєднуйся</div>
+                <div className={classes.row}>
+                    <div className={classes.img}>
+                        <img src={img01} alt="invite" />
+                    </div>
+                    <div className={classes.body}>
+                        <div className={classes.text}>
+                            Якщо ви хочете допомогти нам порадою, інформацією
+                            або участю
+                        </div>
+                        <form
+                            className={classes.form}
+                            onSubmit={handleSubmit}
+                            noValidate
+                        >
+                            <div className={classes.formGroup}>
+                                <AppInput
+                                    value={data.fullName}
+                                    name="fullName"
+                                    placeholder="Повне ФІО"
+                                    onChange={handleChange}
+                                    onBlur={() => handleBlur('fullName')}
+                                    additionalStyles={classes.input}
+                                    className={
+                                        errors.fullName
+                                            ? classes.inputError
+                                            : ''
+                                    }
+                                />
+                                {errors.fullName && touched.fullName && (
+                                    <div role="alert" className={classes.error}>
+                                        {errors.fullName}
+                                    </div>
+                                )}
+                            </div>
 
-            <div>
-                <label>
-                    Имя
-                    <input
-                        name="firstName"
-                        value={form.firstName}
-                        onChange={handleChange}
-                        onBlur={(e) => validateField("firstName", e.target.value)}
-                    />
-                </label>
-                {errors.firstName && <div role="alert">{errors.firstName}</div>}
-            </div>
+                            <div className={classes.formGroup}>
+                                <AppInput
+                                    additionalStyles={classes.input}
+                                    type="email"
+                                    value={data.email}
+                                    name="email"
+                                    placeholder="Email"
+                                    onChange={handleChange}
+                                    onBlur={() => handleBlur('email')}
+                                    className={
+                                        errors.email ? classes.inputError : ''
+                                    }
+                                />
+                                {errors.email && touched.email && (
+                                    <div role="alert" className={classes.error}>
+                                        {errors.email}
+                                    </div>
+                                )}
+                            </div>
 
-            <div>
-                <label>
-                    Отчество
-                    <input
-                        name="patronymic"
-                        value={form.patronymic}
-                        onChange={handleChange}
-                        onBlur={(e) => validateField("patronymic", e.target.value)}
-                    />
-                </label>
-                {errors.patronymic && <div role="alert">{errors.patronymic}</div>}
-            </div>
+                            <div className={classes.formGroup}>
+                                <AppInput
+                                    additionalStyles={classes.input}
+                                    type="tel"
+                                    value={data.phone}
+                                    name="phone"
+                                    placeholder="Номер телефону"
+                                    onChange={handleChange}
+                                    onBlur={() => handleBlur('phone')}
+                                    className={
+                                        errors.phone ? classes.inputError : ''
+                                    }
+                                    pattern="[0-9]*"
+                                    inputMode="numeric"
+                                />
+                                {errors.phone && touched.phone && (
+                                    <div role="alert" className={classes.error}>
+                                        {errors.phone}
+                                    </div>
+                                )}
+                            </div>
 
-            <div>
-                <label>
-                    О себе
-                    <textarea
-                        name="about"
-                        value={form.about}
-                        onChange={handleChange}
-                        onBlur={(e) => validateField("about", e.target.value)}
-                    />
-                </label>
-                {errors.about && <div role="alert">{errors.about}</div>}
-            </div>
+                            <div className={classes.formGroup}>
+                                <AppInput
+                                    additionalStyles={classes.input}
+                                    type="textarea"
+                                    value={data.about}
+                                    name="about"
+                                    placeholder="Розкажіть про себе"
+                                    onChange={handleChange}
+                                    onBlur={() => handleBlur('about')}
+                                    className={
+                                        errors.about ? classes.inputError : ''
+                                    }
+                                />
+                                <div className={classes.charCounter}>
+                                    {data.about.length}/500
+                                </div>
+                                {errors.about && touched.about && (
+                                    <div role="alert" className={classes.error}>
+                                        {errors.about}
+                                    </div>
+                                )}
+                            </div>
 
-            <div>
-                <label>
-                    Email
-                    <input
-                        name="email"
-                        type="email"
-                        value={form.email}
-                        onChange={handleChange}
-                        onBlur={(e) => validateField("email", e.target.value)}
-                        autoComplete="email"
-                    />
-                </label>
-                {errors.email && <div role="alert">{errors.email}</div>}
-            </div>
+                            <div className={classes.formGroup}>
+                                <div className={classes.fileUpload}>
+                                    <label className={classes.fileLabel}>
+                                        <input
+                                            type="file"
+                                            name="photo"
+                                            onChange={handleFileChange}
+                                            accept=".jpg,.jpeg,.png,.pdf"
+                                            className={classes.fileInput}
+                                            multiple
+                                            disabled={data.photo?.length >= 2}
+                                        />
+                                        <span
+                                            className={`${classes.fileButton} ${
+                                                errors.photo && touched.photo
+                                                    ? classes.fileButtonError
+                                                    : ''
+                                            }`}
+                                        >
+                                            {data.photo?.length > 0
+                                                ? `Файлів вибрано: ${data.photo.length}/2`
+                                                : 'Прикріпити фото/документ (макс. 2 файли)'}
+                                        </span>
+                                    </label>
 
-            <div>
-                <label>
-                    Телефон (только цифры)
-                    <input
-                        name="phone"
-                        value={form.phone}
-                        onChange={handlePhoneChange}
-                        onBlur={(e) => validateField("phone", e.target.value)}
-                        inputMode="numeric"
-                        autoComplete="tel"
-                    />
-                </label>
-                {errors.phone && <div role="alert">{errors.phone}</div>}
-            </div>
+                                    {data.photo?.length === 0 &&
+                                        touched.photo && (
+                                            <div
+                                                role="alert"
+                                                className={classes.error}
+                                            >
+                                                {errors.photo ||
+                                                    'Будь ласка, прикріпіть хоча б один файл'}
+                                            </div>
+                                        )}
 
-            <div>
-                <label>
-                    Фотографии (макс 2)
-                    <input
-                        ref={fileInputRef}
-                        name="files"
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleFilesChange}
-                    />
-                </label>
-                {errors.files && <div role="alert">{errors.files}</div>}
+                                    {data.photo?.map((file, index) => (
+                                        <div
+                                            key={index}
+                                            className={classes.fileInfo}
+                                        >
+                                            <span>
+                                                {file.name} (
+                                                {(
+                                                    file.size /
+                                                    1024 /
+                                                    1024
+                                                ).toFixed(2)}{' '}
+                                                MB)
+                                            </span>
+                                            <button
+                                                type="button"
+                                                className={classes.removeFile}
+                                                onClick={() =>
+                                                    removeFile(index)
+                                                }
+                                            >
+                                                ×
+                                            </button>
+                                        </div>
+                                    ))}
 
-                {form.files && form.files.length > 0 && (
-                    <ul>
-                        {form.files.map((f, i) => (
-                            <li key={i}>
-                                {f.name} ({Math.round(f.size / 1024)} KB){" "}
-                                <button type="button" onClick={() => removeFile(i)}>
-                                    Удалить
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+                                    {data.photo?.length >= 2 && (
+                                        <div className={classes.fileLimit}>
+                                            Досягнуто максимальної кількості
+                                            файлів (2)
+                                        </div>
+                                    )}
+                                </div>
+                                {errors.photo &&
+                                    touched.photo &&
+                                    data.photo?.length > 0 && (
+                                        <div
+                                            role="alert"
+                                            className={classes.error}
+                                        >
+                                            {errors.photo}
+                                        </div>
+                                    )}
+                            </div>
 
-            <div>
-                <button type="submit">Отправить</button>
+                            <button
+                                type="submit"
+                                className={classes.submitButton}
+                                disabled={
+                                    isSubmitting || !isFormValid() // Используем новую функцию для проверки
+                                }
+                            >
+                                {isSubmitting
+                                    ? 'Відправка...'
+                                    : 'Надіслати заявку'}
+                            </button>
+
+                            {/* Индикатор обязательности файлов */}
+                            {data.photo?.length === 0 && (
+                                <div className={classes.fileRequired}>
+                                    * Обов'язково прикріпіть хоча б один файл
+                                </div>
+                            )}
+                        </form>
+                    </div>
+                </div>
             </div>
-        </form>
+        </div>
     );
-}
+};

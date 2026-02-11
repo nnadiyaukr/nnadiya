@@ -3,7 +3,7 @@ import img from '@img/gerb.png';
 
 export const Logo = () => {
     return (
-        <div className={classes.logo}>
+        <a href="/" className={classes.logo}>
             <div className={classes.text}>
                 <span className={classes.primary}>На</span>
                 <span className={classes.secondary}>дiя</span>
@@ -11,6 +11,6 @@ export const Logo = () => {
             <div className={classes.gerb}>
                 <img src={img} alt="gerb" />
             </div>
-        </div>
+        </a>
     );
 };

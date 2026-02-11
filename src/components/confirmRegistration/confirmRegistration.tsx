@@ -7,6 +7,7 @@ import useAuthStore from '@/core/store/auth.store';
 import localStorageService from '@/services/localStorage.service';
 import useUiActionsStore from '@/core/store/uiActions.store';
 import useErrorStore from '@/core/store/error.store';
+import {useLocation, useNavigate} from "react-router";
 
 export const ConfirmRegistration = () => {
     const [data, setData] = useState({
@@ -15,6 +16,7 @@ export const ConfirmRegistration = () => {
     const { email } = useAuthStore();
     const {setIsLoading, setShowModal} = useUiActionsStore();
     const {setError} = useErrorStore();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         try {
@@ -24,14 +26,23 @@ export const ConfirmRegistration = () => {
                 code: data.code,
                 email,
             });
-            localStorageService.setItem(
-                'accessToken',
-                response.data.accessToken
-            );
+            if (response.data.success) {
+                localStorageService.setItem(
+                    'accessToken',
+                    response.data.accessToken
+                );
+
+                navigate("/profile")
+                setShowModal(false);
+            }
+
         } catch (e) {
             setIsLoading(false);
             setError(e);
             setShowModal('error');
+        }
+        finally {
+            setIsLoading(false)
         }
     };
     const handleChange = (name, value) => {

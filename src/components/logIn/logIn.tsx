@@ -6,14 +6,16 @@ import { authService } from '@/services/auth.service';
 import useErrorStore from '@/core/store/error.store';
 import useUiActionsStore from '@/core/store/uiActions.store';
 import localStorageService from '@/services/localStorage.service';
+import { useLocation, useNavigate } from 'react-router';
 
 export const LogIn = () => {
     const [data, setData] = useState({
         email: '',
         password: '',
     });
+    const navigate = useNavigate();
     const { setError } = useErrorStore();
-    const { setIsLoading } = useUiActionsStore();
+    const { setIsLoading, setShowModal } = useUiActionsStore();
     const handleChange = (name: string, value: string): void => {
         setData((prevState) => {
             return {
@@ -31,10 +33,15 @@ export const LogIn = () => {
             console.log('Отправка запроса c данными:', data);
 
             const response = await authService.login(data);
-            console.log("response", response);
+            console.log('response', response);
             if (response?.status === 200) {
                 setIsLoading(false);
-                localStorageService.setItem("accessToken", response?.data?.accessToken);
+                localStorageService.setItem(
+                    'accessToken',
+                    response?.data?.accessToken
+                );
+                navigate('/profile');
+                setShowModal(false);
             }
         } catch (e) {
             setIsLoading(false);

@@ -10,7 +10,7 @@ const HomePage = () => (
         <About />
         <Directions />
         <Principles />
-        {/*<Invite />*/}
+        <Invite />
     </>
 )
 
