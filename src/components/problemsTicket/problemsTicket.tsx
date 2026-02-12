@@ -27,7 +27,7 @@ export const ProblemsTicket = () => {
                     <AppInput
                         value={data.fullName}
                         name="fullName"
-                        placeholder="fullName"
+                        placeholder="ПІБ"
                         type="text"
                         additionalStyles={classes.input}
                         onChange={handleChange}
@@ -35,7 +35,7 @@ export const ProblemsTicket = () => {
                     <AppInput
                         value={data.feedbackType}
                         name="feedbackType"
-                        placeholder="feedbackType"
+                        placeholder="Як зв'язатися з вами?"
                         type="text"
                         additionalStyles={classes.input}
                         onChange={handleChange}
@@ -43,7 +43,7 @@ export const ProblemsTicket = () => {
                     <AppInput
                         value={data.text}
                         name="text"
-                        placeholder="text"
+                        placeholder="Опишіть проблему"
                         type="text"
                         additionalStyles={classes.input}
                         onChange={handleChange}

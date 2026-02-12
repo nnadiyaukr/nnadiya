@@ -1,6 +1,14 @@
-.invite {
-    margin-top: 150px;
+@use '@mixins/index';
 
+.invite {
+    @include index.responsive-property('marginTop', 100, 150, 320, 768);
+
+    input[type='textarea'] {
+        height: 100px;
+    }
+}
+
+.invite {
     .title {
         font-size: 27px;
         text-align: center;
@@ -190,6 +198,7 @@
 @media (max-width: 992px) {
     .row {
         flex-direction: column;
+        margin-top: 30px !important;
     }
     .img {
         min-height: auto;

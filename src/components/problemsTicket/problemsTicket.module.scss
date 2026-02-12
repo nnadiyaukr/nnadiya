@@ -1,3 +1,5 @@
+@use '@mixins/index';
+
 .problems {
     padding: 50px 0;
     border: 2px solid black;
@@ -8,7 +10,7 @@
 }
 
 .title {
-    font-size: 30px;
+    @include index.responsive-font(25, 27, 320, 768);
     border-radius: 20px;
     background: #000;
     color: white;
@@ -28,7 +30,6 @@
 }
 
 .input {
-    margin-bottom: 20px;
     border: 2px solid #000000;
     border-radius: 10px;
     background: #ffffff;

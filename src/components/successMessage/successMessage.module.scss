@@ -1,0 +1,17 @@
+.successMessage {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+
+    img {
+        max-width: 60px;
+    }
+
+    padding: 30px 60px;
+    border-radius: 18px;
+    border: 2px solid rgb(0, 0, 0);
+
+    background: rgba(255, 255, 255, 0.39);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(10px);
+}

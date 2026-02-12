@@ -1,8 +1,11 @@
+@use '@mixins/index';
+
 .problemsReviews {
     margin-top: 70px;
 }
+
 .title {
-    font-size: 30px;
+    @include index.responsive-font(25, 27, 320, 768);
     border-radius: 20px;
     background: #000;
     color: white;
@@ -21,8 +24,9 @@
 }
 .column {
     padding: 0 7px;
-    flex: 0 1 33.333%;
+    flex: 1 1 33.333%;
     display: flex;
+    min-width: 230px;
 }
 
 .item {
@@ -30,12 +34,15 @@
     border-radius: 20px;
     padding: 15px;
     border: 2px solid #000000;
+    display: flex;
+    flex-direction: column;
     img {
         max-width: 18px;
     }
 }
 .text {
     font-size: 18px;
+    flex: 1 1 auto;
 }
 .author,
 .location {
