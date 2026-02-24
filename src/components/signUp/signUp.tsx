@@ -74,7 +74,10 @@ export const SignUp = () => {
                 [name]: value,
             };
             if (name === 'password' && next.confirmPassword) {
-                const confirmErr = validators.confirmPassword(next.confirmPassword, next);
+                const confirmErr = validators.confirmPassword(
+                    next.confirmPassword,
+                    next
+                );
                 setErrors((prev) => ({ ...prev, confirmPassword: confirmErr }));
             }
             validateField(name, value);
@@ -86,7 +89,11 @@ export const SignUp = () => {
         e.preventDefault();
 
         if (!validateAll()) {
-            const firstInvalid = Object.keys(errors).find((k) => errors[k]) || Object.keys(validators).find((k) => validators[k](data[k], data));
+            const firstInvalid =
+                Object.keys(errors).find((k) => errors[k]) ||
+                Object.keys(validators).find((k) =>
+                    validators[k](data[k], data)
+                );
             if (firstInvalid) {
                 const el = document.querySelector(`[name="${firstInvalid}"]`);
                 if (el && typeof el.focus === 'function') el.focus();
@@ -126,7 +133,11 @@ export const SignUp = () => {
                     onChange={handleChange}
                     additionalStyles={classes.input}
                 />
-                {errors.name && <div role="alert" className={classes.error}>{errors.name}</div>}
+                {errors.name && (
+                    <div role="alert" className={classes.error}>
+                        {errors.name}
+                    </div>
+                )}
 
                 <AppInput
                     type="text"
@@ -136,7 +147,11 @@ export const SignUp = () => {
                     onChange={handleChange}
                     additionalStyles={classes.input}
                 />
-                {errors.email && <div role="alert" className={classes.error}>{errors.email}</div>}
+                {errors.email && (
+                    <div role="alert" className={classes.error}>
+                        {errors.email}
+                    </div>
+                )}
 
                 <AppInput
                     name="password"
@@ -146,7 +161,11 @@ export const SignUp = () => {
                     onChange={handleChange}
                     additionalStyles={classes.input}
                 />
-                {errors.password && <div role="alert" className={classes.error}>{errors.password}</div>}
+                {errors.password && (
+                    <div role="alert" className={classes.error}>
+                        {errors.password}
+                    </div>
+                )}
 
                 <AppInput
                     name="confirmPassword"
@@ -156,9 +175,13 @@ export const SignUp = () => {
                     onChange={handleChange}
                     additionalStyles={classes.input}
                 />
-                {errors.confirmPassword && <div role="alert" className={classes.error}>{errors.confirmPassword}</div>}
+                {errors.confirmPassword && (
+                    <div role="alert" className={classes.error}>
+                        {errors.confirmPassword}
+                    </div>
+                )}
 
-                <button type="submit">Отправить</button>
+                <button type="submit">Надiслати</button>
             </form>
         </div>
     );
