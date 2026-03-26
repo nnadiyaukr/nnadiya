@@ -6,10 +6,11 @@ import { Header } from '@/components/header/header';
 import ModalsLayout from '@/layouts/modalsLayout';
 import useUiActionsStore from '@/core/store/uiActions.store';
 import { Loading } from '@/components/loading';
+import { Footer } from '@/components/footer';
 
 const MainLayout = ({ children }) => {
     const [showSearch, setShowSearch] = useState(false);
-    const {isLoading} = useUiActionsStore();
+    const { isLoading } = useUiActionsStore();
 
     const handleSearch = (e, id) => {
         if (id === 'search') {
@@ -25,8 +26,9 @@ const MainLayout = ({ children }) => {
             <NavBar onSearch={handleSearch} />
             {children}
             {showSearch && <Search handleShowSearch={setShowSearch} />}
+            <Footer />
             <ModalsLayout />
-            {isLoading && <Loading/>}
+            {isLoading && <Loading />}
         </div>
     );
 };

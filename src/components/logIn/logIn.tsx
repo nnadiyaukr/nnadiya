@@ -45,6 +45,7 @@ export const LogIn = () => {
             }
         } catch (e) {
             setIsLoading(false);
+            setShowModal('error');
             // setShowLoginModal(false);
             setError(e);
         }

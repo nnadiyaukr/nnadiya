@@ -14,5 +14,6 @@ export default [
         ]),
 
         route('problem', './pages/problem.tsx'),
+        route('money', './pages/money.tsx'),
     ]),
 ] satisfies RouteConfig;

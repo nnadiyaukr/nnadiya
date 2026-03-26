@@ -1,0 +1,42 @@
+@use '@mixins/index';
+.result {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 15px 0;
+    margin-top: 5px;
+}
+.loginMessage {
+    margin-top: 20px;
+}
+
+.actions {
+    display: flex;
+    @include index.responsive-font(11, 16, 320, 768);
+    margin-top: 10px;
+}
+.login,
+.registration {
+    cursor: pointer;
+    padding: 10px 20px;
+    @include index.responsive-property('paddingLeft', 10, 20, 320, 768);
+    @include index.responsive-property('paddingRight', 10, 20, 320, 768);
+    font-weight: 600;
+    transition: 0.2s;
+    &:hover {
+        transform: translateY(-2px);
+    }
+}
+
+.login {
+    background: #000000;
+    color: #ffffff;
+    border-radius: 10px 0 0 10px;
+    border-right: 1px solid;
+    border-right-color: #ffffff;
+}
+
+.registration {
+    background: #000000;
+    color: #ffffff;
+    border-radius: 0 10px 10px 0;
+}

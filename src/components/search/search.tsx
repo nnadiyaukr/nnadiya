@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useClickAway, useDebounce } from 'react-use';
 import { fetchAllByName } from '@/api/peoples';
 import { SearchResult } from '@/components/searchResult';
+import closeIcon from '@icons/cross.png';
 
 export const Search = ({ handleShowSearch }) => {
     const [searchRequest, setSearchRequest] = useState({
@@ -11,16 +12,16 @@ export const Search = ({ handleShowSearch }) => {
     });
     const [searchResult, setSearchResult] = useState(null);
     const ref = useRef(null);
-    useClickAway(ref, () => {
-        handleShowSearch(false);
-    });
+    // useClickAway(ref, () => {
+    //     handleShowSearch(false);
+    // });
     const handleSubmit = async () => {
         const res = await fetchAllByName(searchRequest.search);
-        if (!res.length) {
-            setSearchResult(null);
-        }
-        setSearchResult(res);
         console.log('res', res);
+        // if (!res.length) {
+        //     setSearchResult(null);
+        // }
+        setSearchResult(res.length);
     };
     const handleChange = (name, value) => {
         setSearchRequest((prevState) => {
@@ -31,15 +32,21 @@ export const Search = ({ handleShowSearch }) => {
         });
     };
     useEffect(() => {
-        console.log('serachResult', searchResult);
-    }, [searchResult]);
+        console.log('searchResult', searchResult);
+        console.log('searchRequest', searchRequest);
+    }, [searchRequest]);
 
     const [, cancel] = useDebounce(
         () => {
             console.log('Отправляем запрос!');
-            handleSubmit();
+            if (searchRequest.search === '') {
+                setSearchResult(null);
+            }
+            if (searchRequest.search) {
+                handleSubmit();
+            }
         },
-        0,
+        700,
         [searchRequest]
     );
 
@@ -50,16 +57,16 @@ export const Search = ({ handleShowSearch }) => {
                     className={classes.close}
                     onClick={() => handleShowSearch(false)}
                 >
-                    X
+                    {<img src={closeIcon} alt="close" />}
                 </div>
                 <div className={classes.body} ref={ref}>
                     <AppInput
                         value={searchRequest.search}
-                        placeholder="Введите ФИО человека, которого ищите"
+                        placeholder="Введіть ПІБ людини, яку шукайте"
                         name="search"
                         onChange={handleChange}
                     />
-                    {searchResult && <SearchResult data={searchResult} />}
+                    <SearchResult data={searchResult} />
                 </div>
             </div>
         </div>

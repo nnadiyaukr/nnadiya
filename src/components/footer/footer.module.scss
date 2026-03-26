@@ -1,0 +1,230 @@
+.footer {
+    font-family: 'Roboto', sans-serif;
+    background: #000;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 56px 20px 0;
+    margin-top: 70px;
+}
+
+.inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px;
+
+        & > div:first-child {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+}
+
+.brandLogo {
+    background: #fff;
+    color: #000;
+    border-radius: 20px;
+    padding: 8px 18px;
+    font-size: clamp(20px, 3vw, 32px);
+    display: inline-block;
+    margin-bottom: 16px;
+
+    em {
+        font-style: italic;
+        font-weight: 200;
+        font-size: 0.8em;
+    }
+
+    @media (max-width: 360px) {
+        font-size: 20px;
+        padding: 6px 14px;
+        border-radius: 14px;
+    }
+
+    @media (max-width: 320px) {
+        font-size: 17px;
+        padding: 5px 12px;
+        border-radius: 12px;
+    }
+}
+
+.brandDesc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.5);
+    max-width: 280px;
+    margin-bottom: 24px;
+
+    @media (max-width: 360px) {
+        font-size: 13px;
+    }
+
+    @media (max-width: 320px) {
+        font-size: 12px;
+        max-width: 100%;
+        margin-bottom: 16px;
+    }
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 16px;
+
+    @media (max-width: 320px) {
+        font-size: 11px;
+        padding: 4px 10px;
+    }
+}
+
+.badgeDot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #4ade80;
+    flex-shrink: 0;
+    display: inline-block;
+}
+
+.socialWrap {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+
+    @media (max-width: 320px) {
+        gap: 8px;
+    }
+}
+
+.socialBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    text-decoration: none;
+    transition:
+        border-color 0.2s,
+        background 0.2s;
+
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        background: rgba(255, 255, 255, 0.07);
+    }
+
+    @media (max-width: 320px) {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+    }
+}
+
+.colTitle {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.35);
+    margin-bottom: 18px;
+}
+
+.colLink {
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.65);
+    text-decoration: none;
+    margin-bottom: 11px;
+    transition: color 0.2s;
+
+    &:hover {
+        color: #fff;
+    }
+}
+
+.bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px 0;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    @media (max-width: 480px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    @media (max-width: 320px) {
+        padding: 14px 0;
+        gap: 10px;
+    }
+}
+
+.copy {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.3);
+
+    @media (max-width: 360px) {
+        font-size: 12px;
+    }
+
+    @media (max-width: 320px) {
+        font-size: 11px;
+    }
+}
+
+.bottomLinks {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+
+    @media (max-width: 480px) {
+        gap: 12px 16px;
+    }
+
+    @media (max-width: 320px) {
+        gap: 8px 12px;
+    }
+
+    a {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+        text-decoration: none;
+        transition: color 0.2s;
+
+        &:hover {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 360px) {
+            font-size: 12px;
+        }
+
+        @media (max-width: 320px) {
+            font-size: 11px;
+        }
+    }
+}

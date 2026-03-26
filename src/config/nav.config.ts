@@ -12,7 +12,7 @@ export const navConfig = [
     {
         id: 'n03',
         link: 'search',
-        label: 'Пошук пропашвих',
+        label: 'Пошук зниклих',
     },
     {
         id: 'n04',
@@ -21,7 +21,7 @@ export const navConfig = [
     },
     {
         id: 'n01',
-        link: '#about',
+        link: '/#about',
         label: 'Про нас',
     },
 ];
