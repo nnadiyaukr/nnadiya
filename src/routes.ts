@@ -15,5 +15,6 @@ export default [
 
         route('problem', './pages/problem.tsx'),
         route('money', './pages/money.tsx'),
+        route('privacypolicy', './pages/privacyPolicy.tsx'),
     ]),
 ] satisfies RouteConfig;

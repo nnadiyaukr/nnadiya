@@ -27,7 +27,7 @@ export function Footer() {
                             { label: 'Головна', href: '/' },
                             { label: 'Про нас', href: '/about' },
                             { label: 'Напрямки', href: '/directions' },
-                            { label: 'Принципи', href: '/principles' },
+                            { label: 'Політика конфіденційності', href: '/privacypolicy' },
                             { label: 'Контакти', href: '/contacts' },
                         ]}
                     />
