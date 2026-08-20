@@ -27,7 +27,14 @@ export function Footer() {
                             { label: 'Головна', href: '/' },
                             { label: 'Про нас', href: '/about' },
                             { label: 'Напрямки', href: '/directions' },
-                            { label: 'Політика конфіденційності', href: '/privacypolicy' },
+                            {
+                                label: 'Політика конфіденційності',
+                                href: '/privacypolicy',
+                            },
+                            {
+                                label: 'Стандарти захисту дітей',
+                                href: '/childSafetyStandards',
+                            },
                             { label: 'Контакти', href: '/contacts' },
                         ]}
                     />

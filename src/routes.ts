@@ -16,5 +16,6 @@ export default [
         route('problem', './pages/problem.tsx'),
         route('money', './pages/money.tsx'),
         route('privacypolicy', './pages/privacyPolicy.tsx'),
+        route('childSafetyStandards', './pages/childSafetyStandards.tsx'),
     ]),
 ] satisfies RouteConfig;
